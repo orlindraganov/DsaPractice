@@ -39,7 +39,6 @@ namespace Beers
 
             // TODO: refactor the Element class so the innermost foreach goes to beer.ConnectedBeerPeers z.b.
             // Not needed in this implementation, where all the elements are interconnected but useful the future.
-            // Also the algorithm ought to be improveable by not going to visited otherBeer. 
 
             var hasChangeOccured = true;
             while (hasChangeOccured)
@@ -54,7 +53,7 @@ namespace Beers
 
                     foreach (var otherBeer in beers)
                     {
-                        if (beer == otherBeer)
+                        if (beer == otherBeer || otherBeer.IsVisited)
                         {
                             continue;
                         }
