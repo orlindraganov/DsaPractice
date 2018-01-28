@@ -74,7 +74,7 @@ namespace Beers
                         }
 
                         otherBeer.BestTime = time;
-                        // Needed only if you're not checking if otherBeer.IsVisited
+                        // Needed only if you're NOT checking if otherBeer.IsVisited
                         // otherBeer.IsVisited = false;
                         hasChangeOccured = true;
                     }
