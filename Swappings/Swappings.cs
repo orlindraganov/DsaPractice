@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Swappings
 {
-    internal class Program
+    internal class Swappings
     {
         private static void Main()
         {
