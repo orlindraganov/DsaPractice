@@ -35,6 +35,8 @@ namespace Beers
                 beers.Add(beer);
             }
 
+            // To start from the closest beer peers.
+            // If you go without ordering the beers you should ommit checking if otherBeer.IsVisited where indicated by another comment. It's slightly faster.
             beers = beers.OrderBy(x => x).ToList();
 
             // TODO: refactor the Element class so the innermost foreach goes to beer.ConnectedBeerPeers z.b.
@@ -53,6 +55,7 @@ namespace Beers
 
                     foreach (var otherBeer in beers)
                     {
+                        // If you go without ordering the beers you should ommit checking if otherBeer.IsVisited.
                         if (beer == otherBeer || otherBeer.IsVisited)
                         {
                             continue;
@@ -71,7 +74,8 @@ namespace Beers
                         }
 
                         otherBeer.BestTime = time;
-                        otherBeer.IsVisited = false;
+                        // Needed only if you're not checking if otherBeer.IsVisited
+                        // otherBeer.IsVisited = false;
                         hasChangeOccured = true;
                     }
 
