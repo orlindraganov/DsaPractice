@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Swappings
 {
-    internal class Program
+    internal class Swappings
     {
         private static void Main()
         {
@@ -44,10 +43,8 @@ namespace Swappings
             }
 
 
-            for (int i = 0; i < splits.Length; i++)
+            foreach (var splitNumber in splits)
             {
-                var splitNumber = splits[i];
-
                 var middle = dict[splitNumber];
                 ChainLink<int> prev;
                 ChainLink<int> next;
@@ -93,16 +90,14 @@ namespace Swappings
 
     internal class ChainLink<T>
     {
-        private T value;
+        private readonly T value;
+
         public ChainLink(T value)
         {
             this.value = value;
         }
 
-        public T Value
-        {
-            get => this.value;
-        }
+        public T Value => this.value;
 
         public ChainLink<T> Previous { get; private set; }
 
@@ -121,6 +116,7 @@ namespace Swappings
             {
                 return;
             }
+
             if (link.Previous != null)
             {
                 throw new InvalidOperationException("The other link already has an attachment");
@@ -142,10 +138,12 @@ namespace Swappings
             {
                 return;
             }
+
             if (link.Next != null)
             {
                 throw new InvalidOperationException("The other link already has an attachment");
             }
+
             link.AttachNext(this, true);
         }
 
