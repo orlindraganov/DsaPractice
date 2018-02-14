@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 namespace ThreeDSlices
 {
@@ -9,148 +10,131 @@ namespace ThreeDSlices
         {
             var sizes = Console.ReadLine().Split().Select(int.Parse).ToArray();
 
-            var cuboid = new int[sizes[0], sizes[1], sizes[2]];
+            var width = sizes[0];
+            var height = sizes[1];
+            var depth = sizes[2];
 
-            for (int i = 0; i < sizes[1]; i++)
+            var totalSum = 0;
+
+            var widthResults = new int[width];
+            var heightResults = new int[height];
+            var depthResults = new int[depth];
+
+            for (int high = 0; high < height; high++)
             {
-                var numbersAsString = Console.ReadLine().Split('|').Select(x => x.Trim()).ToArray();
+                var input = Console.ReadLine();
+                var currentIndex = 0;
 
-                for (int j = 0; j < sizes[2]; j++)
+                for (int deep = 0; deep < depth; deep++)
                 {
-                    var numbers = numbersAsString[j].Split().Select(int.Parse).ToArray();
-
-                    for (int k = 0; k < sizes[0]; k++)
+                    for (int sideways = 0; sideways < width; sideways++)
                     {
-                        cuboid[k, i, j] = numbers[k];
+                        currentIndex = GetNumberIndex(currentIndex, input);
+                        var length = GetNumberLength(currentIndex, input);
+
+                        var number = int.Parse(input.Substring(currentIndex, length));
+
+                        widthResults[sideways] += number;
+                        heightResults[high] += number;
+                        depthResults[deep] += number;
+
+                        totalSum += number;
+
+                        currentIndex += length;
                     }
                 }
             }
 
             var possibilities = 0;
 
-            for (int j = 0; j < 3; j++)
+            var firstResult = widthResults[0];
+            var secondResult = totalSum - firstResult;
+
+            for (int i = 1; i < width; i++)
             {
-                for (int i = 1; i < cuboid.GetLength(j); i++)
+                if (firstResult == secondResult)
                 {
-                    if (cuboid.SubCuboidSum(j, 0, i) == cuboid.SubCuboidSum(j, i))
-                    {
-                        possibilities++;
-                    }
+                    possibilities++;
                 }
+
+                firstResult += widthResults[i];
+                secondResult -= widthResults[i];
+            }
+
+            firstResult = heightResults[0];
+            secondResult = totalSum - firstResult;
+
+            for (int i = 1; i < height; i++)
+            {
+                if (firstResult == secondResult)
+                {
+                    possibilities++;
+                }
+
+                firstResult += heightResults[i];
+                secondResult -= heightResults[i];
+            }
+
+            firstResult = depthResults[0];
+            secondResult = totalSum - firstResult;
+
+            for (int i = 1; i < depth; i++)
+            {
+                if (firstResult == secondResult)
+                {
+                    possibilities++;
+                }
+
+                firstResult += depthResults[i];
+                secondResult -= depthResults[i];
             }
 
             Console.WriteLine(possibilities);
         }
-    }
 
-    static class CuboidExtensions
-    {
-        internal static int SubCuboidSum(this int[,,] cuboid, int dimension, int startingIndex)
+        private static int GetNumberIndex(int startingIndex, string s)
         {
-            if (dimension < 0 || 2 < dimension)
-            {
-                throw new ArgumentException("Dimension must be between 0 and 2!");
-            }
-            var length = cuboid.GetLength(dimension) - startingIndex;
+            char curr = s[startingIndex];
 
-            return cuboid.SubCuboidSum(dimension, startingIndex, length);
+            while (!char.IsDigit(curr))
+            {
+                startingIndex++;
+                if (startingIndex > s.Length - 1)
+                {
+                    return -1;
+                }
+                curr = s[startingIndex];
+            }
+
+            return startingIndex;
         }
 
-        internal static int SubCuboidSum(this int[,,] cuboid, int dimension, int startingIndex, int sliceLength)
+        private static int GetNumberLength(int startingIndex, string s)
         {
-            if (dimension < 0 || 2 < dimension)
+            var length = 0;
+
+            var currentIndex = startingIndex + length;
+
+            if (currentIndex > s.Length - 1)
             {
-                throw new ArgumentException("Dimension must be between 0 and 2!");
+                return -1;
             }
+            char curr = s[startingIndex + length];
 
-            int sliceDimension;
-            int sliceRowDimension;
-            int sliceColDimension;
 
-            int cuboidZeroSize = cuboid.GetLength(0);
-            int cuboidFirstSize = cuboid.GetLength(1);
-            int cuboidSedcondSize = cuboid.GetLength(2);
-
-            var sum = 0;
-
-            if (dimension == 0)
+            while (char.IsDigit(curr))
             {
-                sliceDimension = 0;
-                sliceRowDimension = 1;
-                sliceColDimension = 2;
-
-                for (int i = 0; i < sliceLength; i++)
+                length++;
+                currentIndex = startingIndex + length;
+                if (currentIndex > s.Length - 1)
                 {
-                    var cuboidIndex = i + startingIndex;
-
-                    for (int j = 0; j < cuboidFirstSize; j++)
-                    {
-                        for (int k = 0; k < cuboidSedcondSize; k++)
-                        {
-                            sum += cuboid[cuboidIndex, j, k];
-                        }
-                    }
+                    length--;
+                    break;
                 }
+                curr = s[startingIndex + length];
             }
 
-            else if (dimension == 1)
-            {
-                sliceDimension = 1;
-                sliceRowDimension = 2;
-                sliceColDimension = 0;
-
-                for (int i = 0; i < sliceLength; i++)
-                {
-                    var cuboidIndex = i + startingIndex;
-
-                    for (int j = 0; j < cuboidSedcondSize; j++)
-                    {
-                        for (int k = 0; k < cuboidZeroSize; k++)
-                        {
-                            sum += cuboid[k, cuboidIndex, j];
-                        }
-                    }
-                }
-            }
-            else
-            {
-                sliceDimension = 2;
-                sliceRowDimension = 0;
-                sliceColDimension = 1;
-
-                for (int i = 0; i < sliceLength; i++)
-                {
-                    var cuboidIndex = i + startingIndex;
-
-                    for (int j = 0; j < cuboidZeroSize; j++)
-                    {
-                        for (int k = 0; k < cuboidFirstSize; k++)
-                        {
-                            sum += cuboid[j, k, cuboidIndex];
-                        }
-                    }
-                }
-            }
-
-            return sum;
-        }
-
-        internal static int Sum(this int[,,] cuboid)
-        {
-            var sum = 0;
-
-            for (int i = 0; i < cuboid.GetLength(0); i++)
-            {
-                for (int j = 0; j < cuboid.GetLength(1); j++)
-                {
-                    for (int k = 0; k < cuboid.GetLength(2); k++)
-                    {
-                        sum += cuboid[i, j, k];
-                    }
-                }
-            }
-
-            return sum;
+            return length;
         }
     }
 }
